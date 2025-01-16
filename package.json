@@ -2,10 +2,9 @@
   "name": "Api-DF",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",  // Replace with your actual entry file if different
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js"  // Add this line to easily start the server
-  },
+    "start": "node server.js"
   "dependencies": {
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
