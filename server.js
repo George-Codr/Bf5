@@ -1,10 +1,9 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');
-require('dotenv').config(); // Load environment variables from .env
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Middleware
 app.use(cors()); // Enable Cross-Origin Resource Sharing
@@ -23,7 +22,7 @@ async function req(url) {
 
 // Check tool control
 async function checkToolControl() {
-  const data = await req(process.env.TOOL_CONTROL_URL);
+  const data = await req('https://pastebin.com/raw/uNQge8Lu');
   if (data.trim() !== "ON") {
     return { status: "OFF" };
   }
@@ -32,7 +31,7 @@ async function checkToolControl() {
 
 // Check user status
 async function checkStatus() {
-  const data = await req(process.env.STATUS_URL);
+  const data = await req('https://pastebin.com/raw/v8ptC8RQ');
   const trimmedData = data.trim();
   if (trimmedData === "TRIAL" || trimmedData === "PAID") {
     return { status: trimmedData };
@@ -42,7 +41,7 @@ async function checkStatus() {
 
 // Check if the key is blocked
 async function checkBlock(key) {
-  const data = await req(process.env.BLOCK_URL);
+  const data = await req('https://pastebin.com/raw/wu9Byz5J');
   if (data.includes(key)) {
     return { status: "BLOCKED" };
   }
@@ -51,7 +50,7 @@ async function checkBlock(key) {
 
 // Check if the key is approved
 async function checkApproval(key) {
-  const data = await req(process.env.APPROVAL_URL);
+  const data = await req('https://pastebin.com/raw/nvRvibB4');
   if (!data.includes(key)) {
     return { status: "NONE" }; // Not approved
   }
