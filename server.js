@@ -1,9 +1,16 @@
 const express = require('express');
-const fetch = require('node-fetch'); // Install using `npm install node-fetch`
+const fetch = require('node-fetch');
+const cors = require('cors');
+require('dotenv').config(); // Load environment variables from .env
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Use environment port or default to 3000
+const PORT = process.env.PORT || 3000;
 
+// Middleware
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(express.json()); // Parse JSON request bodies
+
+// Helper to fetch external data
 async function req(url) {
   try {
     const response = await fetch(url);
@@ -14,45 +21,49 @@ async function req(url) {
   }
 }
 
+// Check tool control
 async function checkToolControl() {
-  const data = await req("https://pastebin.com/raw/uNQge8Lu");
+  const data = await req(process.env.TOOL_CONTROL_URL);
   if (data.trim() !== "ON") {
-    return { message: "OFF" };
+    return { status: "OFF" };
   }
-  return { status: "ON" }; // Indicates tool is active
+  return { status: "ON" };
 }
 
+// Check user status
 async function checkStatus() {
-  const data = await req("https://pastebin.com/raw/v8ptC8RQ");
+  const data = await req(process.env.STATUS_URL);
   const trimmedData = data.trim();
   if (trimmedData === "TRIAL" || trimmedData === "PAID") {
-    return { message: trimmedData }; // Returns user status
+    return { status: trimmedData };
   }
   throw new Error("Invalid status from server.");
 }
 
+// Check if the key is blocked
 async function checkBlock(key) {
-  const data = await req("https://pastebin.com/raw/wu9Byz5J");
+  const data = await req(process.env.BLOCK_URL);
   if (data.includes(key)) {
-    return { message: "BLOCKED" };
+    return { status: "BLOCKED" };
   }
-  return { message: "NOT_BLOCKED" }; // Indicates key is not blocked
+  return { status: "NOT_BLOCKED" };
 }
 
+// Check if the key is approved
 async function checkApproval(key) {
-  const data = await req("https://pastebin.com/raw/nvRvibB4");
+  const data = await req(process.env.APPROVAL_URL);
   if (!data.includes(key)) {
-    return { message: "NONE" }; // Indicates no approval
+    return { status: "NONE" }; // Not approved
   }
-  return { status: "APPROVED" }; // Indicates approval for key
+  return { status: "APPROVED" };
 }
 
+// Execute custom functionality
 function executeCustomFunctionality() {
-  // Add your custom functionality here
   return { message: "ACTIVE" };
 }
 
-// Define API endpoint
+// API endpoint
 app.get('/api', async (req, res) => {
   try {
     const key = req.query.key || "";
@@ -77,7 +88,7 @@ app.get('/api', async (req, res) => {
       if (approvalStatus.status === "NONE") return res.status(200).json(approvalStatus);
     }
 
-    // If all checks pass, execute functionality
+    // All checks passed, execute functionality
     const response = executeCustomFunctionality();
     res.status(200).json(response);
 
@@ -86,7 +97,7 @@ app.get('/api', async (req, res) => {
   }
 });
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});{
+});
