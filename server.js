@@ -9,18 +9,27 @@ const PORT = 3000;
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Parse JSON request bodies
 
-// Helper to fetch external data
+// Helper to fetch external data with error logging
 async function req(url) {
   try {
+    console.log(`Attempting to fetch from URL: ${url}`);  // Log the URL being requested
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`Failed to fetch data from ${url}`);
+    
+    // Check for a successful response
+    if (!response.ok) {
+      console.error(`Failed to fetch from ${url}: Status code ${response.status}`); // Log failure
+      throw new Error(`Failed to fetch data from ${url}`);
+    }
+    
+    // Return response text if successful
     return await response.text();
   } catch (error) {
+    console.error(`Error fetching from ${url}:`, error);  // Log full error message
     throw new Error("Network Error");
   }
 }
 
-// Check tool control
+// Check tool control status
 async function checkToolControl() {
   const data = await req('https://pastebin.com/raw/uNQge8Lu');
   if (data.trim() !== "ON") {
@@ -92,6 +101,7 @@ app.get('/api', async (req, res) => {
     res.status(200).json(response);
 
   } catch (error) {
+    console.error("Error in /api endpoint:", error);  // Log full error details
     res.status(400).json({ error: error.message });
   }
 });
