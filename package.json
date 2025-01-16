@@ -1,0 +1,26 @@
+{
+  "name": "api-check-tool",
+  "version": "1.0.0",
+  "description": "A Node.js API for checking tool control, status, key blocking, and approval.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "api",
+    "tool-control",
+    "key-check"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
